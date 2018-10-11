@@ -9,7 +9,8 @@ var async = require('async');
 
 // Get spreadsheet  
 // spreadsheet key is the long id in the sheets URL
-var doc = new GoogleSpreadsheet('1NZJc2oPN9o_qWQq6CV7yCYGrmGwujlqfhEnhTBHTNKo');
+// DEBUG: HAS BEEN REPLACED WITH FAKE COPY OF HKN LIST
+var doc = new GoogleSpreadsheet('1EHSV709D97kJ1pj-Hs--qyzK2JWtYUFfJ1QxDflpMHM');
 var sheet;
 
 var itemSheet; 
