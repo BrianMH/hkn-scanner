@@ -345,10 +345,11 @@ app.post('/process_signin', urlencodedParser, function (req, res) {
       }, function( err, rows ){
         console.log("rows.length: "+rows.length); 
         for (var i=0; i < rows.length; i++){
-          console.log('Userid: '+rows[i].userid); 
+          console.log('Userid: '+rows[i].userid);
+          console.log(rows[i]);
           if( response.userid.toString().trim() === rows[i].userid) { 
             console.log("found matching id"); 
-            //console.log(rows[i]); 
+            // console.log(rows[i]); 
             console.log(response.userid.toString().trim()); 
             console.log(rows[i].userid); 
             req.session.username = rows[i].username; 

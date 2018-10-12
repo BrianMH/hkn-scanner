@@ -6,10 +6,12 @@
   "dependencies": {
     "async": "^2.1.2",
     "body-parser": "^1.15.2",
+    "cheerio": "^1.0.0-rc.2",
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "forever": "^0.15.3",
-    "google-spreadsheet": "^2.0.3"
+    "google-spreadsheet": "^2.0.3",
+    "selenium-webdriver": "^4.0.0-alpha.1"
   },
   "devDependencies": {},
   "scripts": {
