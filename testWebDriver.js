@@ -74,8 +74,8 @@ async function attemptParse(pageSource) {
 	while(date > EARLIEST_TRANS_DATE) {
 		let lastDate = $(".feed-story-payment").find(".feed-description__notes__meta");
 		lastDate = lastDate[lastDate.length-1];   // find last date
-		lastDate = new Date($(lastDate).eq(0).text().replace(DATE_APPEND_STRING, ""));
-		console.log(lastDate);
+		date = new Date($(lastDate).eq(0).text().replace(DATE_APPEND_STRING, ""));
+		console.log(date);
 
 		// enlarge list if possible, otherwise break
 		if($(".feed-more").length == 1) {
@@ -88,25 +88,32 @@ async function attemptParse(pageSource) {
 	}
 
 	// work way through source to collect all desired entries from final page source
+	let userRegex = new RegExp('( paid | charged )');		// used to separate payments
 	$(".feed-story-payment").each(function (i, elem) {
-		// prepare new json entry for addition
-		transactionList.push({})
-
-		// preprocess required entries
+		// preprocess date first
 		let tempDate = $(this).find(".feed-description__notes__meta");
-		let tempSwapUsers = $(this).find(".feed-description__notes__headline").text().trim().split(" paid ");
-		let tempExchAmt = parseFloat($(this).find(".feed-description__amount").text().replace("$", ""));
+		tempDate = new Date($(tempDate).eq(0).text().replace(DATE_APPEND_STRING, ""))
 
-		// log required entires in json
-		transactionList[i].exchangeDate = new Date($(tempDate).eq(0).text().replace(DATE_APPEND_STRING, ""));
-		transactionList[i].exchangeUser1 = tempSwapUsers[0];
-		transactionList[i].exchangeUser2 = tempSwapUsers[1];
-		transactionList[i].exchangeAmount = tempExchAmt;
+		// check if entry is valid (within timeframe), otherwise skip entry
+		if(tempDate > EARLIEST_TRANS_DATE) {
+			// prepare new json entry for addition
+			transactionList.push({})
 
-		// console log outputs
-		console.log(transactionList[i].exchangeDate);
-		console.log(tempSwapUsers);
-		console.log(tempExchAmt);
+			// get last couple entries
+			let tempSwapUsers = $(this).find(".feed-description__notes__headline").text().trim().split(userRegex);
+			let tempExchAmt = parseFloat($(this).find(".feed-description__amount").text().replace("$", ""));
+
+			// log required entires in json
+			transactionList[i].exchangeDate = tempDate;
+			transactionList[i].exchangeUser1 = tempSwapUsers[0];
+			transactionList[i].exchangeUser2 = tempSwapUsers[1];
+			transactionList[i].exchangeAmount = tempExchAmt;
+
+			// console log outputs
+			console.log(transactionList[i].exchangeDate);
+			console.log(tempSwapUsers);
+			console.log(tempExchAmt);
+		}
 	})
 
 	return transactionList;
@@ -117,7 +124,7 @@ async function attemptParse(pageSource) {
 async function testScraping() {
 	// Create headless form of chrome for usage by driver
 	let copts = new chrome.Options();
-	// copts.addArguments('--headless');
+	copts.addArguments('--headless');			// don't use this unless you are sure it works!
 	copts.addArguments('--user-data-dir=/home/'+USER+'/.config/google-chrome/');
 	driver = new webdriver.Builder().forBrowser('chrome')
 						.setChromeOptions(copts)
@@ -132,7 +139,7 @@ async function testScraping() {
 
 	// try scraping)
 	let results = await driver.getPageSource().then(attemptParse);
-	// driver.close();
+	driver.close();
 	return results;
 }
 
